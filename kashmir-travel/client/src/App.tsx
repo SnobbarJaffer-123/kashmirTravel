@@ -4,6 +4,7 @@ import Packages from './pages/Packages';
 import AuthForm from './pages/AuthForm';
 import MyBookings from './pages/MyBookings';
  import PackageDetail from './pages/PackageDetail';
+ import Admin from './pages/Admin';
 
 function Navbar() {
   const { user, logout } = useAuth();
@@ -14,6 +15,8 @@ function Navbar() {
         <div className="flex items-center gap-4 text-sm font-semibold">
           {user ? (
             <>
+
+              {user.role === 'admin' && <Link to="/admin">Admin</Link>}
               <Link to="/bookings">My bookings</Link>
               <button onClick={logout}>Log out ({user.name})</button>
             </>
@@ -35,6 +38,12 @@ function Private({ children }: { children: JSX.Element }) {
   return user ? children : <Navigate to="/login" replace />;
 }
 
+function AdminOnly({ children }: { children: JSX.Element }) {
+  const { user, loading } = useAuth();
+  if (loading) return <p className="p-6">Loading…</p>;
+  return user?.role === 'admin' ? children : <Navigate to="/" replace />;
+}
+
 export default function App() {
   return (
     <div className="min-h-screen bg-slate-50 text-ink">
@@ -46,7 +55,7 @@ export default function App() {
           <Route path="/register" element={<AuthForm mode="register" />} />
           <Route path="/bookings" element={<Private><MyBookings /></Private>} />
             <Route path="/packages/:slug" element={<PackageDetail />} />
-          {/* TODO (Week 5): admin routes */}
+          <Route path="/admin" element={<AdminOnly><Admin /></AdminOnly>} />
         </Routes>
       </main>
     </div>
