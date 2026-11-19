@@ -5,6 +5,7 @@ import AuthForm from './pages/AuthForm';
 import MyBookings from './pages/MyBookings';
  import PackageDetail from './pages/PackageDetail';
  import Admin from './pages/Admin';
+ import AdminPackages from './pages/AdminPackages';
 
 function Navbar() {
   const { user, logout } = useAuth();
@@ -56,6 +57,7 @@ export default function App() {
           <Route path="/bookings" element={<Private><MyBookings /></Private>} />
             <Route path="/packages/:slug" element={<PackageDetail />} />
           <Route path="/admin" element={<AdminOnly><Admin /></AdminOnly>} />
+          <Route path="/admin/packages" element={<AdminOnly><AdminPackages /></AdminOnly>} />
         </Routes>
       </main>
     </div>

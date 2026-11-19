@@ -33,4 +33,26 @@ router.patch('/bookings/:id/status', wrap(async (req, res) => {
   res.json({ ok: true });
 }));
 
+router.get('/reviews', wrap(async (_req, res) => {
+  const [rows] = await pool.query<RowDataPacket[]>(
+    `SELECT r.id, r.rating, r.comment, r.created_at, u.name AS user_name, p.title
+     FROM reviews r JOIN users u ON u.id = r.user_id JOIN packages p ON p.id = r.package_id
+     ORDER BY r.created_at DESC`);
+  res.json(rows);
+}));
+
+// All packages, including hidden ones
+router.get('/packages', wrap(async (_req, res) => {
+  const [rows] = await pool.query<RowDataPacket[]>('SELECT * FROM packages ORDER BY created_at DESC');
+  res.json(rows);
+}));
+
+// Hide or restore a package
+router.patch('/packages/:id/active', wrap(async (req, res) => {
+  const { active } = z.object({ active: z.boolean() }).parse(req.body);
+  const [r] = await pool.query<ResultSetHeader>('UPDATE packages SET is_active = ? WHERE id = ?', [active ? 1 : 0, req.params.id]);
+  if (!r.affectedRows) throw new AppError(404, 'Package not found');
+  res.json({ ok: true });
+}));
+
 export default router;

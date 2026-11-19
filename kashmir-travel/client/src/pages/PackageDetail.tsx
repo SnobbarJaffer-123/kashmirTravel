@@ -2,6 +2,7 @@ import { FormEvent, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { api, Pkg } from '../api';
 import { useAuth } from '../AuthContext';
+import Reviews from './Reviews';
 
 export default function PackageDetail() {
   const { slug } = useParams();
@@ -52,6 +53,7 @@ export default function PackageDetail() {
         <p className="mt-4 text-sm text-slate-500">{pkg.destination} · {pkg.duration_days} days · up to {pkg.max_guests} guests</p>
         <h1 className="text-3xl font-bold">{pkg.title}</h1>
         <p className="mt-4 text-slate-700 whitespace-pre-line">{pkg.description}</p>
+        <Reviews packageId={pkg.id} />
       </div>
 
       <form onSubmit={book} className="bg-white border rounded-xl p-5 h-fit grid gap-4">

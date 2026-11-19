@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api, Booking } from '../api';
+import { Link } from 'react-router-dom';
 
 export default function MyBookings() {
   const [items, setItems] = useState<Booking[] | null>(null);
@@ -28,7 +29,13 @@ export default function MyBookings() {
               <p className="text-sm text-slate-600">{String(b.travel_date).slice(0, 10)} · {b.guests} guests · ₹{b.total_inr.toLocaleString('en-IN')}</p>
               <p className="text-sm font-semibold capitalize">{b.status}</p>
             </div>
-            {b.status !== 'cancelled' && <button onClick={() => cancel(b.id)} className="text-red-600 font-semibold">Cancel</button>}
+            
+            <div className="flex gap-4 items-start">
+  {b.status === 'confirmed' && (
+    <Link to={`/packages/${b.slug}`} className="text-lake font-semibold underline">Review this trip</Link>
+  )}
+  {b.status !== 'cancelled' && <button onClick={() => cancel(b.id)} className="text-red-600 font-semibold">Cancel</button>}
+</div>
           </li>
         ))}
       </ul>

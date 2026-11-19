@@ -8,6 +8,7 @@ import authRoutes from './routes/auth';
 import packageRoutes from './routes/packages';
 import bookingRoutes from './routes/bookings';
 import adminRoutes from './routes/admin';
+import reviewRoutes from './routes/reviews';
 
 export const app = express();
 app.use(helmet());
@@ -19,4 +20,6 @@ app.use('/api/auth', rateLimit({ windowMs: 15 * 60 * 1000, limit: 50 }), authRou
 app.use('/api/packages', packageRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/reviews', reviewRoutes);
+
 app.use(errorHandler);

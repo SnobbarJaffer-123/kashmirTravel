@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { api } from '../api';
+import { Link } from 'react-router-dom';
 
 type Stats = {
   monthly: { month: string; bookings: number; revenue: string | number }[];
@@ -9,16 +10,21 @@ type Stats = {
 type Row = {
   id: number; user_name: string; email: string; title: string; travel_date: string;
   guests: number; total_inr: number; status: 'pending' | 'confirmed' | 'cancelled';
+  
 };
+type ReviewRow = {
+     id: number; rating: number; comment: string | null; user_name: string; title: string 
+    };
 
 export default function Admin() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [rows, setRows] = useState<Row[]>([]);
+  const [reviews, setReviews] = useState<ReviewRow[]>([]);
   const [error, setError] = useState('');
 
   const load = () =>
-    Promise.all([api<Stats>('/admin/stats'), api<Row[]>('/admin/bookings')])
-      .then(([s, b]) => { setStats(s); setRows(b); })
+    Promise.all([api<Stats>('/admin/stats'), api<Row[]>('/admin/bookings'), api<ReviewRow[]>('/admin/reviews')])
+  .then(([s, b, r]) => { setStats(s); setRows(b); setReviews(r); })
       .catch((e) => setError(e.message));
   useEffect(() => { load(); }, []);
 
@@ -38,6 +44,7 @@ export default function Admin() {
   return (
     <section className="grid gap-8">
       <h1 className="text-3xl font-bold">Admin dashboard</h1>
+      <Link to="/admin/packages" className="text-lake underline font-semibold">Manage packages →</Link>
 
       <div className="grid sm:grid-cols-2 gap-4">
         <div className="bg-white border rounded-xl p-5">
@@ -108,6 +115,19 @@ export default function Admin() {
         </table>
         {rows.length === 0 && <p className="mt-3">No bookings yet.</p>}
       </div>
+
+      <div className="bg-white border rounded-xl p-5">
+  <h2 className="font-bold mb-3">Customer reviews</h2>
+  {reviews.length === 0 && <p>No reviews yet.</p>}
+  <ul className="grid gap-3">
+    {reviews.map((r) => (
+      <li key={r.id} className="border-b pb-2">
+        <p className="font-semibold">{r.title}: <span className="text-saffron">{'★'.repeat(r.rating)}</span> by {r.user_name}</p>
+        {r.comment && <p className="text-slate-700">{r.comment}</p>}
+      </li>
+    ))}
+  </ul>
+</div>
     </section>
   );
 }
