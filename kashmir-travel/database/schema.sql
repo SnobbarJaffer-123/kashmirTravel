@@ -19,6 +19,7 @@ CREATE TABLE packages (
   duration_days TINYINT NOT NULL,
   price_inr INT NOT NULL COMMENT 'price per person in rupees',
   max_guests TINYINT NOT NULL DEFAULT 10,
+  daily_capacity INT NOT NULL DEFAULT 20,
   image_url VARCHAR(255),
   is_active TINYINT(1) NOT NULL DEFAULT 1,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

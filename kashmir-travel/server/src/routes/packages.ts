@@ -38,6 +38,19 @@ router.get('/:slug', wrap(async (req, res) => {
   res.json(rows[0]);
 }));
 
+// How many seats are left for a package on a date
+router.get('/:id/availability', wrap(async (req, res) => {
+  const date = z.string().regex(/^\d{4}-\d{2}-\d{2}$/).parse(req.query.date);
+  const [rows] = await pool.query<RowDataPacket[]>(
+    'SELECT daily_capacity FROM packages WHERE id = ? AND is_active = 1', [req.params.id]);
+  if (!rows[0]) throw new AppError(404, 'Package not found');
+  const [taken] = await pool.query<RowDataPacket[]>(
+    "SELECT COALESCE(SUM(guests), 0) AS seats FROM bookings WHERE package_id = ? AND travel_date = ? AND status <> 'cancelled'",
+    [req.params.id, date]);
+  const capacity = rows[0].daily_capacity as number;
+  res.json({ capacity, left: Math.max(0, capacity - Number(taken[0].seats)) });
+}));
+
 const packageSchema = z.object({
   title: z.string().min(3).max(120),
   slug: z.string().regex(/^[a-z0-9-]+$/),

@@ -15,6 +15,7 @@ export default function PackageDetail() {
   const [guests, setGuests] = useState(1);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+  const [left, setLeft] = useState<number | null>(null);
 
   // Load this package when the page opens
   useEffect(() => {
@@ -22,6 +23,14 @@ export default function PackageDetail() {
       .then((p) => { setPkg(p); setState('ok'); })
       .catch(() => setState('error'));
   }, [slug]);
+
+  // Whenever the date changes, ask how many seats are left
+useEffect(() => {
+  if (!pkg || !date) { setLeft(null); return; }
+  api<{ left: number }>(`/packages/${pkg.id}/availability?date=${date}`)
+    .then((d) => setLeft(d.left))
+    .catch(() => setLeft(null));
+}, [pkg, date]);
 
   if (state === 'loading') return <p>Loading…</p>;
   if (state === 'error' || !pkg) {
@@ -65,13 +74,24 @@ export default function PackageDetail() {
             className="border rounded px-3 py-2 font-normal" />
         </label>
         <label className="grid gap-1 font-semibold">Guests
-          <input type="number" min={1} max={pkg.max_guests} value={guests}
-            onChange={(e) => setGuests(Math.max(1, Math.min(pkg.max_guests, Number(e.target.value) || 1)))}
+          <input type="number" min={1} max={left === null ? pkg.max_guests : Math.max(1, Math.min(pkg.max_guests, left))} value={guests}
+            onChange={(e) => {
+  const cap = left === null ? pkg.max_guests : Math.max(1, Math.min(pkg.max_guests, left));
+  setGuests(Math.max(1, Math.min(cap, Number(e.target.value) || 1)));
+}}
             className="border rounded px-3 py-2 font-normal" />
         </label>
+        
+        {left !== null && (
+  <p role="status" className={left === 0 ? 'font-semibold text-red-600' : 'text-slate-600'}>
+    {left === 0 ? 'Fully booked on this date' : `${left} seats left on this date`}
+  </p>
+)}
+
+
         <p className="font-semibold">Total: ₹{total.toLocaleString('en-IN')}</p>
         {error && <p role="alert" className="text-red-600">{error}</p>}
-        <button disabled={busy} className="px-4 py-2 rounded bg-lake text-white font-semibold disabled:opacity-60">
+        <button disabled={busy || left === 0} className="px-4 py-2 rounded bg-lake text-white font-semibold disabled:opacity-60">
           {busy ? 'Booking…' : user ? 'Book now' : 'Log in to book'}
         </button>
       </form>
