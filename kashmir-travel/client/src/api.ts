@@ -1,7 +1,7 @@
 export type User = { id: number; name: string; email: string; role: 'user' | 'admin' };
 export type Pkg = {
   id: number; title: string; slug: string; destination: string; description: string;
-  duration_days: number; price_inr: number; max_guests: number; image_url: string | null;
+  duration_days: number; price_inr: number; max_guests: number; daily_capacity: number;image_url: string | null;
 };
 export type Booking = {
   id: number; travel_date: string; guests: number; total_inr: number;

@@ -9,6 +9,7 @@ import packageRoutes from './routes/packages';
 import bookingRoutes from './routes/bookings';
 import adminRoutes from './routes/admin';
 import reviewRoutes from './routes/reviews';
+import paymentRoutes from './routes/payments';
 
 export const app = express();
 app.use(helmet());
@@ -21,5 +22,6 @@ app.use('/api/packages', packageRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/reviews', reviewRoutes);
+app.use('/api/payments', paymentRoutes);
 
 app.use(errorHandler);

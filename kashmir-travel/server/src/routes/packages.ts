@@ -59,24 +59,25 @@ const packageSchema = z.object({
   duration_days: z.number().int().min(1).max(30),
   price_inr: z.number().int().min(1),
   max_guests: z.number().int().min(1).max(50),
+  daily_capacity: z.number().int().min(1).max(500),
   image_url: z.string().max(255).optional(),
 });
 
 router.post('/', requireAuth, requireAdmin, wrap(async (req, res) => {
   const p = packageSchema.parse(req.body);
   const [r] = await pool.query<ResultSetHeader>(
-    `INSERT INTO packages (title, slug, destination, description, duration_days, price_inr, max_guests, image_url)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-    [p.title, p.slug, p.destination, p.description, p.duration_days, p.price_inr, p.max_guests, p.image_url ?? null]);
+    `INSERT INTO packages (title, slug, destination, description, duration_days, price_inr, max_guests, daily_capacity, image_url)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [p.title, p.slug, p.destination, p.description, p.duration_days, p.price_inr, p.max_guests, p.daily_capacity, p.image_url ?? null]);
   res.status(201).json({ id: r.insertId });
 }));
 
 router.put('/:id', requireAuth, requireAdmin, wrap(async (req, res) => {
   const p = packageSchema.parse(req.body);
   const [r] = await pool.query<ResultSetHeader>(
-    `UPDATE packages SET title=?, slug=?, destination=?, description=?, duration_days=?, price_inr=?, max_guests=?, image_url=?
+    `UPDATE packages SET title=?, slug=?, destination=?, description=?, duration_days=?, price_inr=?, max_guests=?, daily_capacity=?, image_url=?
      WHERE id=?`,
-    [p.title, p.slug, p.destination, p.description, p.duration_days, p.price_inr, p.max_guests, p.image_url ?? null, req.params.id]);
+    [p.title, p.slug, p.destination, p.description, p.duration_days, p.price_inr, p.max_guests, p.daily_capacity, p.image_url ?? null, req.params.id]);
   if (!r.affectedRows) throw new AppError(404, 'Package not found');
   res.json({ ok: true });
 }));

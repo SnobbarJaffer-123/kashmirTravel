@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { api, Pkg } from '../api';
 
 type Row = Pkg & { is_active: number };
-const empty = { title: '', slug: '', destination: '', description: '', duration_days: 1, price_inr: 1000, max_guests: 10, image_url: '' };
+const empty = { title: '', slug: '', destination: '', description: '', duration_days: 1, price_inr: 1000, max_guests: 10,daily_capacity: 20, image_url: '' };
 
 const slugify = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
@@ -30,7 +30,7 @@ export default function AdminPackages() {
   function edit(p: Row) {
     setEditingId(p.id);
     setForm({ title: p.title, slug: p.slug, destination: p.destination, description: p.description,
-      duration_days: p.duration_days, price_inr: p.price_inr, max_guests: p.max_guests, image_url: p.image_url ?? '' });
+      duration_days: p.duration_days, price_inr: p.price_inr, max_guests: p.max_guests,daily_capacity: p.daily_capacity, image_url: p.image_url ?? '' });
     setError(''); setOk('');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -45,6 +45,7 @@ export default function AdminPackages() {
       duration_days: Number(form.duration_days),
       price_inr: Number(form.price_inr),
       max_guests: Number(form.max_guests),
+      daily_capacity: Number(form.daily_capacity),
       image_url: form.image_url.trim() || undefined,
     };
     try {
@@ -99,6 +100,10 @@ export default function AdminPackages() {
         <label className="grid gap-1 font-semibold">Maximum guests
           <input className={field} type="number" min={1} max={50} value={form.max_guests} onChange={(e) => set('max_guests', Number(e.target.value))} required />
         </label>
+        <label className="grid gap-1 font-semibold">Seats per date
+  <input className={field} type="number" min={1} max={500} value={form.daily_capacity}
+    onChange={(e) => set('daily_capacity', Number(e.target.value))} required />
+</label>
         <div className="sm:col-span-2 flex flex-wrap items-center gap-3">
           <button disabled={busy} className="px-5 py-2 rounded bg-lake text-white font-semibold disabled:opacity-60">
             {busy ? 'Saving…' : editingId === null ? 'Create package' : 'Save changes'}

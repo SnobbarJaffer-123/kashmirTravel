@@ -15,4 +15,6 @@ export const env = {
   DB_PASSWORD: process.env.DB_PASSWORD ?? '',
   DB_NAME: need('DB_NAME'),
   JWT_SECRET: need('JWT_SECRET'),
+  RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID ?? '',
+  RAZORPAY_KEY_SECRET: process.env.RAZORPAY_KEY_SECRET ?? '',
 };

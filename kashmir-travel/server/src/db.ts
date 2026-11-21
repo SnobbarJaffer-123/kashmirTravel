@@ -8,4 +8,5 @@ export const pool = mysql.createPool({
   password: env.DB_PASSWORD,
   database: env.DB_NAME,
   connectionLimit: 10,
+  dateStrings: ['DATE'], // send dates as plain "2026-12-10" text, so no timezone shift
 });

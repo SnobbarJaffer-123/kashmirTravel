@@ -59,6 +59,7 @@ CREATE TABLE payments (
   booking_id INT NOT NULL,
   provider VARCHAR(30) NOT NULL,
   provider_ref VARCHAR(80),
+  provider_payment_id VARCHAR(80),
   amount_inr INT NOT NULL,
   status ENUM('created','paid','failed') NOT NULL DEFAULT 'created',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
